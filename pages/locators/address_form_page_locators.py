@@ -1,0 +1,10 @@
+name_input = '[name="name"]'
+email_input = '[name="email"]'
+phone_input = '[name="phone"]'
+street_input = '[name="street"]'
+zip_input = '[name="zip"]'
+city_input = '[name="city"]'
+country_select = '#country_id'
+state_select = '[name="state_id"]'
+use_same_checkbox = '#shipping_use_same'
+continue_checkout_btn = "a:has-text('Continue checkout')"

@@ -14,6 +14,11 @@ on:
           - extended
           - all
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   run_test:
     runs-on: ubuntu-latest
@@ -22,6 +27,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up Java 21 (Required for Allure CLI)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'microsoft'
+          java-version: '21'
 
       - name: Set up Python environment
         uses: actions/setup-python@v5
@@ -35,18 +46,40 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
+      # --- ЭТАП 1: Запуск тестов ---
       - name: Run all tests
         if: github.event.inputs.deployment_target == 'all'
         run: pytest --alluredir=allure-results
+        continue-on-error: true
 
       - name: Run smoke tests
         if: github.event.inputs.deployment_target == 'smoke'
-        run: pytest -m smoke 
+        run: pytest -m smoke --alluredir=allure-results
+        continue-on-error: true
 
       - name: Run regression tests
         if: github.event.inputs.deployment_target == 'regression'
-        run: pytest -m regression 
+        run: pytest -m regression --alluredir=allure-results
+        continue-on-error: true
 
       - name: Run extended tests
         if: github.event.inputs.deployment_target == 'extended'
-        run: pytest -m extended 
+        run: pytest -m extended --alluredir=allure-results
+        continue-on-error: true
+
+      # --- ЭТАП 2: Сборка и сохранение Allure отчета ---
+      - name: Install Allure CLI
+        if: always()
+        run: sudo npm install -g allure-commandline --save-dev
+
+      - name: Generate Allure Report
+        if: always()
+        run: allure generate allure-results --clean -o allure-report
+
+      - name: Save Allure Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-${{ github.run_id }}
+          path: allure-report
+          retention-days: 1

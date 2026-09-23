@@ -46,7 +46,4 @@ jobs:
       - name: Run extended tests
         if: "github.event.inputs.deployment_target=='extended'"
         run: pytest -m extended
-
-        
-
         

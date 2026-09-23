@@ -3,7 +3,10 @@
 # test 3: Check that user can add several products to the cart via product details page
 import time
 
+import pytest
 
+
+@pytest.mark.smoke
 def test_user_can_select_another_product_colour(categories_page, product_page):
     categories_page.open_page()
     categories_page.open_first_product()
@@ -14,7 +17,7 @@ def test_user_can_select_another_product_colour(categories_page, product_page):
 
     product_page.should_have_correct_image_variant(selected_colour)
 
-
+@pytest.mark.regression
 def test_user_can_custom_product(categories_page, product_page):
     categories_page.open_page()
     categories_page.wait_until_products_loaded()
@@ -28,7 +31,7 @@ def test_user_can_custom_product(categories_page, product_page):
 
     product_page.should_have_custom_popup("Custom", "test")
 
-
+@pytest.mark.extended
 def test_user_can_add_several_product_items_to_cart(categories_page, product_page):
     categories_page.open_page()
     categories_page.wait_until_products_loaded()

@@ -1,7 +1,10 @@
 # test 1: Check that user can add product to cart via the Categories page and cart quantity will be displayed
 # test 2: Check that user can filter product by Legs -> Custom
 # test 3: Check that user can open the Product details via the Categories page and check title and price
+import pytest
 
+
+@pytest.mark.smoke
 def test_add_product_to_cart(categories_page):
     categories_page.open_page()
     categories_page.add_product_to_cart()
@@ -9,7 +12,7 @@ def test_add_product_to_cart(categories_page):
 
     categories_page.should_have_cart_quantity(1)
 
-
+@pytest.mark.regression
 def test_filter_custom_shows_only_customizable_desk(categories_page):
     categories_page.open_page()
     categories_page.select_legs()
@@ -17,7 +20,7 @@ def test_filter_custom_shows_only_customizable_desk(categories_page):
 
     categories_page.should_have_single_product_with_title("Customizable Desk")
 
-
+@pytest.mark.extended
 def test_product_title_and_price_are_same_on_pdp(categories_page, product_page):
     categories_page.open_page()
     categories_page.wait_until_products_loaded()

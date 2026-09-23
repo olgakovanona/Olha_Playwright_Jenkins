@@ -1,4 +1,5 @@
 import pytest
+import allure
 from playwright.sync_api import Page
 from pages.categories_page import CategoriesPage
 from pages.checkout_page import CheckoutPage

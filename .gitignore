@@ -1,8 +1,26 @@
-venv/
+# Allure Reports & Results
+allure-results/
+allure-report/
+
+# Pytest & Playwright Artifacts
+.pytest_cache/
+test-results/
+playwright-report/
+blob-report/
+
+# Python Environments & Cache
 __pycache__/
-*.pyc
-.DS_Store
+*.py[cod]
+venv/
+.venv/
+*.egg-info/
+
+# IDE / Editor Files
 .idea/
-.pytest_cache
-credentials.py
+.vscode/
+*.swp
+
+# Environment & OS Secrets
 .env
+.DS_Store
+Thumbs.db

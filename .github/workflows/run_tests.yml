@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   run_test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Run autotests
 
     steps:
@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Java 21 (Required for Allure CLI)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'microsoft'
           java-version: '21'
@@ -41,7 +41,10 @@ jobs:
           cache: 'pip'
 
       - name: Install Python dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install allure-pytest
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -49,18 +52,26 @@ jobs:
       # --- ЭТАП 1: Запуск тестов ---
       - name: Run all tests
         if: github.event.inputs.deployment_target == 'all'
+        env:
+          PYTHONPATH: .
         run: pytest --alluredir=allure-results
 
       - name: Run smoke tests
         if: github.event.inputs.deployment_target == 'smoke'
+        env:
+          PYTHONPATH: .
         run: pytest -m smoke --alluredir=allure-results
 
       - name: Run regression tests
         if: github.event.inputs.deployment_target == 'regression'
+        env:
+          PYTHONPATH: .
         run: pytest -m regression --alluredir=allure-results
 
       - name: Run extended tests
         if: github.event.inputs.deployment_target == 'extended'
+        env:
+          PYTHONPATH: .
         run: pytest -m extended --alluredir=allure-results
 
       # --- ЭТАП 2: Сборка и сохранение Allure отчета ---

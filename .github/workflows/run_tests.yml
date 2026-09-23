@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       deployment_target:
-        description: Choose test set
+        description: 'Choose test set'
         required: true
         type: choice
-        default: smoke
+        default: 'smoke'
         options:
           - smoke
           - regression
@@ -20,30 +20,38 @@ jobs:
     name: Run autotests
 
     steps:
-      - name: Checkout autotest
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python environment
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+          cache: 'pip'
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: pip install -r requirements.txt
 
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
       - name: Run all tests
-        if: "github.event.inputs.deployment_target=='all'"
-        run: pytest
+        if: github.event.inputs.deployment_target == 'all'
+        run: pytest --alluredir=allure-results
 
       - name: Run smoke tests
-        if: "github.event.inputs.deployment_target=='smoke'"
-        run: pytest -m smoke
+        if: github.event.inputs.deployment_target == 'smoke'
+        run: pytest -m smoke 
 
       - name: Run regression tests
-        if: "github.event.inputs.deployment_target=='regression'"
-        run: pytest -m regression
+        if: github.event.inputs.deployment_target == 'regression'
+        run: pytest -m regression 
 
       - name: Run extended tests
-        if: "github.event.inputs.deployment_target=='extended'"
-        run: pytest -m extended
-        
+        if: github.event.inputs.deployment_target == 'extended'
+        run: pytest -m extended 
+
+        with:
+          name: allure-report-${{ github.run_id }}
+          path: allure-report/
+          retention-days: 14

@@ -74,7 +74,7 @@ jobs:
           PYTHONPATH: .
         run: pytest -m extended --alluredir=allure-results
 
-      # --- ЭТАП 2: Сборка и сохранение Allure отчета ---
+      # --- ЭТАП 2: Сборка Allure отчета ---
       - name: Install Allure CLI
         if: always()
         run: sudo npm install -g allure-commandline --save-dev
@@ -90,3 +90,20 @@ jobs:
           name: allure-report-${{ github.run_id }}
           path: allure-report
           retention-days: 1
+
+      - name: Upload artifact for GitHub Pages
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-report
+
+  publish_report:
+    name: Report publication
+    runs-on: ubuntu-24.04
+    needs: run_test
+    if: always()
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+  
